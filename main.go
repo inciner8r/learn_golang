@@ -5,6 +5,28 @@ import (
 	"net/http"
 )
 
+type Coaster struct {
+	Name         string
+	Manufacturer string
+	ID           string
+	InPark       string
+	Height       string
+}
+
+type coastersHandlers struct {
+	store map[string]Coaster
+}
+
+func (h *coastersHandlers) get(rw http.ResponseWriter, r *http.Request) {
+
+}
+
+func newCoastersHandler() *coastersHandlers {
+	return &coastersHandlers{
+		store: map[string]Coaster{},
+	}
+}
+
 func rootHandler(rw http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/hello" {
 		http.Error(rw, "404 not found", http.StatusNotFound)
@@ -32,8 +54,10 @@ func formHandler(rw http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	coastersHandlers := newCoastersHandler()
 	FileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/", FileServer)
+	http.HandleFunc("/coaster", coastersHandlers.get)
 	http.HandleFunc("/form", formHandler)
 	http.HandleFunc("/hello", rootHandler)
 	err := http.ListenAndServe(":8080", nil)
